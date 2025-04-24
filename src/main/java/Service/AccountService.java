@@ -17,6 +17,6 @@ public class AccountService {
 
     public Account login(Account account) {
         // Call the DAO's loginAccount method to authenticate
-        return accountDAO.loginAccount(account);
+        return accountDAO.loginAccount(account);//
     }
 }
