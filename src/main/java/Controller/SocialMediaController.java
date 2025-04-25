@@ -72,7 +72,7 @@ public class SocialMediaController {
         context.status(400);
         return;
     }
-
+//
     Message createdMsg = messageService.createMessage(newMsg);
     if (createdMsg == null) {
         context.status(400);
