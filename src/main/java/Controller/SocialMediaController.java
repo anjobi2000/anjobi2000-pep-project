@@ -17,7 +17,7 @@ import io.javalin.http.Context;
  */
 public class SocialMediaController {
     AccountService accountService = new AccountService();
-    MessageService messageService;
+    MessageService messageService = new MessageService();
     
     /**
      * In order for the test cases to work, you will need to write the endpoints in the startAPI() method, as the test
@@ -65,23 +65,16 @@ public class SocialMediaController {
     }
     private void createMessageHandler(Context context) {
         Message newMsg = context.bodyAsClass(Message.class);
+        Message createdMsg = messageService.createMessage(newMsg);
     
-    if (newMsg.getMessage_text() == null || 
-        newMsg.getMessage_text().isBlank() || 
-        newMsg.getMessage_text().length() > 255) {
-        context.status(400);
-        return;
-    }
-//
-    Message createdMsg = messageService.createMessage(newMsg);
     if (createdMsg == null) {
         context.status(400);
     } else {
-            context.status(200);
-            context.json(createdMsg);
-        }
-    }
+        context.status(200);
+        context.json(createdMsg);
 
+    }  
+    }
     private void getAllMessagesHandler(Context context) {
         List<Message> messages = messageService.getAllMessages();
         context.status(200);
@@ -100,7 +93,8 @@ public class SocialMediaController {
         }
     }catch (SQLException e) {
         e.printStackTrace();
-        context.status(500).result("Database error occurred.");
+        context.status(500);
+        context.result("Database error occurred.");
     }
     }
     private void getMessagesByAccountIdHandler(Context context) {
@@ -115,9 +109,9 @@ public class SocialMediaController {
         Message deletedMsg = messageService.getMessageById(id);
         int deleted = messageService.deleteMessageById(id);
 
-        if (deleted == 0) {
+        if (deleted == 0 || deletedMsg == null) {
             context.status(200);
-            context.result(""); // return empty body if not found
+            context.result(""); 
         } else {
             context.status(200);
         
@@ -125,7 +119,8 @@ public class SocialMediaController {
         }
     } catch (SQLException e) {
         e.printStackTrace();
-        context.status(500).result("Internal Server Error");
+        context.status(500);
+        context.result("Internal Server Error");
     }
 }
 private void updateMessageHandler(Context context) {
@@ -135,13 +130,15 @@ private void updateMessageHandler(Context context) {
     if (updatedMsgData.getMessage_text() == null || 
         updatedMsgData.getMessage_text().isBlank() || 
         updatedMsgData.getMessage_text().length() > 255) {
+        
         context.status(400);
+        context.result("");
         return;
-    }
-
-    Message updatedMsg = messageService.updateMessage(messageId, updatedMsgData);
-    if (updatedMsg == null) {
-        context.status(400);
+        }
+        Message updatedMsg = messageService.updateMessage(messageId, updatedMsgData);
+        if (updatedMsg == null) {
+            context.status(400);
+            context.result("");
     } else {
         context.status(200);
         context.json(updatedMsg);

@@ -16,6 +16,13 @@ public class MessageService {
     }
 
     public Message createMessage(Message message) {
+        if (message == null || message.getMessage_text() == null || message.getMessage_text().trim().isEmpty()) {
+            return null;
+        }
+        if (message.getMessage_text().length() > 255) {
+            return null;
+        }
+        
         return messageDAO.insertMessage(message);
     }
 
@@ -24,6 +31,12 @@ public class MessageService {
     }
 
     public Message updateMessage(int id,Message updatedMessage) {
+        if (updatedMessage == null || updatedMessage.getMessage_text() == null || updatedMessage.getMessage_text().trim().isEmpty()) {
+            return null;
+        }
+        if (updatedMessage.getMessage_text().length() > 255) {
+            return null;
+        }
         return messageDAO.updateMessage(id, updatedMessage.getMessage_text());
     }
 
@@ -40,7 +53,12 @@ public class MessageService {
         }
     }
     public Message getMessageById(int id) throws SQLException {
+        try {
         return messageDAO.getMessageById(id);
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return null;
     }
+}
 
 }
